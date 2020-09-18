@@ -76,6 +76,11 @@ function generateQuestion(counter) {
 </form>
 </div>`;
 }
+
+function rankGenerator() {
+  
+}
+
 function returnCorrectAnswer() {
   const correctTemplate = `<div class='correct-answer'>
   <h1 class='right-or-wrong'>You Got It!</h1>
@@ -92,6 +97,25 @@ function returnThatsWrong() {
   `;
   return wrongTemplate;
 }
+
+function endOfQuiz() {
+  const summary = `<div class='end-game'>
+  <h1 class='score-rank'></h1>
+  <button class='restart'>Try Again</button></div>`;
+  return summary;
+}
+function restartQuiz() {
+  $('.end-game').on('click', '.restart', function () {
+    store.questionNumber = 0;
+    store.score = 0;
+    renderAll();
+  });
+}
+
+
+
+
+
 function startQuiz() {
   $('.ready-section').on('click', '.ready-butt', function () {
     let userAnswer = $('input[name="welcome-page"]').val();
@@ -102,12 +126,18 @@ function startQuiz() {
     renderAll(question);
   });
 }
+
 function handleAnswerChoice() {
   $('body').submit('#answer-form', function (evt) {
     evt.preventDefault();
     let answer = $('input[name="answer"]:checked').val();
     console.log(answer);
     let correctAns = store.questions[store.questionNumber].correctAnswer;
+    if (store.questionNumber + 1 === store.questions.length) {
+      renderEndPage();
+    } else {
+      renderResults(correctAns);
+    }  
     renderResults(correctAns);
   });
 }
@@ -116,7 +146,8 @@ function handleNextQuestion() {
     console.log('Next question button');
     store.quizStarted === true;
     let counter = store.questionNumber;
-    let question = generateQuestion(counter)
+    console.log(counter);
+    let question = generateQuestion(counter);
     renderAll(question);
   });
 }
@@ -131,6 +162,17 @@ function checkAnswer(correctAns) {
     return returnThatsWrong();
   }
 }
+
+function renderEndPage(answer) {
+  let page = '';
+  page += endOfQuiz(answer);
+  $('.main').html(page);
+  restartQuiz();
+}
+
+
+
+
 function renderResults(answer) {
   let page = '';
   page += checkAnswer(answer);
@@ -145,6 +187,7 @@ function renderAll(template) {
   if (store.quizStarted === true && store.questionNumber < 5) {
     page += template;
   }
+
   $('.main').html(page);
 }
 function main() {
